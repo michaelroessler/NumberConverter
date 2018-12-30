@@ -88,8 +88,24 @@ float x2dec(int from, std::string num) {
 
 //divide by "to" until less than zero
 //maybe recursion
-float dec2x(std::string num, int to) {
-    float sum = 0;
+//*MAYBE CHAR BY CHAR*
+std::string dec2x(int num, int to) {
+    int sum = 0;
+    //float num = number;
+    float rem = num % to;
+    num = num - rem;
+    std::string digit, nextDigit = "";
+    while (num >= to) {
+        num = num - to;
+        sum++;
+    }
+    if (sum >= to) {
+        nextDigit = dec2x(sum, to);
+    } else if (sum != 0) {
+        nextDigit = std::to_string(sum).substr(0,1);
+    }
+    digit = std::to_string(rem).substr(0,1);
+    return nextDigit + digit;
 }
 
 void userInput() {
@@ -99,7 +115,8 @@ void userInput() {
     while (true) {
         std::cout << "> ";
         std::cin >> from >> num >> to;
-        std::cout << x2dec(from, num) << std::endl;
+        //std::cout << x2dec(from, num) << std::endl;
+        std::cout << dec2x(x2dec(from, num), to) << std::endl;
     }
 }
 
