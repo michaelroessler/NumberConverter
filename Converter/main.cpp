@@ -2,6 +2,18 @@
  * File:   main.cpp
  * Author: Michael Roessler
  *
+ * Converts a number from any base from 2 to 36 to another base.
+ * Letters A-F represent numbers 10-35 as a single digit.
+ * 
+ * Type conversion as:
+ * > [from] [value] [to]
+ * 
+ * Example:
+ * > 10 21 2
+ * 10101
+ * 
+ * Example converts the decimal number 21 to binary and gets 10101.
+ * 
  * Created on December 23, 2018, 12:55 PM
  */
 
@@ -16,6 +28,12 @@
 
 using namespace std;
 
+/**
+ * Determines the value of a digit where A=10 to Z=35.
+ * 
+ * @param val   The digit to be processed.
+ * @return      The int value of the digit.
+ */
 int process(char& val) {
     int rVal;
     //std::cout << val << ",";
@@ -59,6 +77,12 @@ int process(char& val) {
     return rVal;
 }
 
+/**
+ * Reverse of the process function.
+ * 
+ * @param val   Decimal value of a digit.
+ * @return      The value as a single digit 0-9/A-Z.
+ */
 char process2(std::string val) {
     char rVal;
     //std::cout << val << std::endl;
@@ -94,22 +118,29 @@ char process2(std::string val) {
     return rVal;
 }
 
+/**
+ * Converts from any base(2-36) to decimal.
+ * 
+ * @param from  The base to convert from.
+ * @param num   The number value to convert.
+ * @return      Returns the decimal value.
+ */
 double x2dec(int from, std::string num) {
     double sum = 0;
     int subtr = 0;
+    
+    // Loop through each char
     for (int i = 0; i < num.length(); i++) {
-        int x = process(num.at(num.length()-(i+1)));
-        //std::cout << x << ", ";
-        // Check if digit
-        if (x >= from) {
+        int x = process(num.at(num.length()-(i+1)));// Determine value of digit
+        
+        // Check if digit is valid
+        if (x >= from) {// Print error if invalid but allow conversion to proceed
             std::cout << "Error in number value: " << num << std::endl;
             std::cout << "Value '" << num.at(num.length()-(i+1)) << "' is invalid in base-" << from << std::endl;
         }
-        if (x >= 0) {
+        if (x >= 0) {// If digit is number value
             sum += x * std::pow(from, i-subtr);
-            //std::cout <<sum<<" ";
-        } else if (x == -1) {// '-'
-            // add something to check '-' is used properly?
+        } else if (x == -1) {// If digit is '-'
             if ((i+1) == num.length()) {
                 sum *= -1;
             } else {
@@ -119,18 +150,16 @@ double x2dec(int from, std::string num) {
             }
             
             break;
-        } else if (x == -2) {// '.'
-            if (subtr != 0) {
+        } else if (x == -2) {// If digit is '.' **Not yet working
+            if (true/*subtr != 0*/) {
                 std::cout << "Error in number value: " << num << std::endl;
                 std::cout << "Improper usage of '.'" << std::endl;
                 sum = 0;// 0 if error
                 break;
             }
-            //std::cout << sum << std::endl;
-            sum = sum / std::pow(from, i);
-            //std::cout << sum << std::endl;
-            subtr = i+1;
-        } else if (x == -3) {
+            //sum = sum / std::pow(from, i);
+            //subtr = i+1;
+        } else if (x == -3) {// If digit is unknown character
             std::cout << "Error in number value: " << num << std::endl;
             std::cout << "Unknown character '" << num.at(num.length()-(i+1)) << "'" << std::endl;
             sum = 0;// 0 if error
@@ -141,10 +170,14 @@ double x2dec(int from, std::string num) {
     return sum;
 }
 
-//divide by "to" until less than zero
-//maybe recursion
-//*MAYBE CHAR BY CHAR*
-std::string dec2x(double num, int to) {//num should be float?
+/**
+ * Converts from decimal to any base(2-36).
+ * 
+ * @param num   Decimal number to convert.
+ * @param to    The base to convert to.
+ * @return      Returns the value in the converted base.
+ */
+std::string dec2x(double num, int to) {
     std::string digit, nextDigit = "", decDigit = "";
     int sum = 0;
     //float num = number;
@@ -174,51 +207,45 @@ std::string dec2x(double num, int to) {//num should be float?
     return nextDigit + digit + decDigit;
 }
 
+/**
+ * Takes user input, prints output, then loops for more input.
+ */
 void userInput() {
     std::string num;
     int from, to;
     std::cout << "Type conversion as: " << std::endl;
-    std::cout << "[from] [value] [to]" << std::endl;
+    std::cout << "> [from] [value] [to]" << std::endl;
     while (true) {
         std::cout << "> ";
-        if (!(std::cin >> from >> num >> to)) {
+        if (!(std::cin >> from >> num >> to)) {// If input types are wrong
             std::cin.clear();
             std::cin.ignore(99999, '\n');
             std::cout << "Error in input" << std::endl;
             std::cout << "Type conversion as: " << std::endl;
-            std::cout << "[from] [value] [to]" << std::endl;
+            std::cout << "> [from] [value] [to]" << std::endl;
             std::cout << "[from] is the base of the value to convert from (2-36)." << std::endl;
             std::cout << "[value] is the number value to be converted." << std::endl;
             std::cout << "[to] is the base to convert to (2-36)." << std::endl;
-        } else if (from < 2 || from > 36) {
+        } else if (from < 2 || from > 36) {// If from isn't a supported base
             std::cout << "Error in [from] value: " << from << std::endl;
             std::cout << "[from] is the base of the value to convert from (2-36)." << std::endl;
-            /*if (from == "?") {
-                std::cout << "Type conversion as: " << std::endl;
-                std::cout << "[from] [value] [to]" << std::endl;
-                std::cout << "[from] is the base of the value to convert from (2-36)." << std::endl;
-                std::cout << "[value] is the number value to be converted." << std::endl;
-                std::cout << "[to] is the base to convert to (2-36)." << std::endl;
-            } else {
-                std::cout << "Error in [from] value: " << from << std::endl;
-                std::cout << "[from] is the base of the value to convert from (2-36)." << std::endl;
-            }*/
-        } else if (to < 2 || to > 36) {
+        } else if (to < 2 || to > 36) {// If to isn't a supported base
             std::cout << "Error in [to] value: " << to << std::endl;
             std::cout << "[to] is the base to convert to (2-36)." << std::endl;
-        } else {
+        } else {// If no errors then calculate
             std::cout << dec2x(x2dec(from, num), to) << std::endl;
         }
         
     }
 }
 
-/*
- * 
- */
 int main(int argc, char** argv) {
-    userInput();
-    // x2dec(2, 10);
+    // If there are 3 args, calculate with that
+    if (argc == 4) {
+        std::cout << dec2x(x2dec(stoi(argv[1]), argv[2]), stoi(argv[3])) << std::endl;
+    } else {// Else use console input
+        userInput();
+    }
     return 0;
 }
 
